@@ -18,22 +18,46 @@
   <!-- Vue CDN -->
   <script src="https://unpkg.com/vue@next"></script>
   <script src="//cdnjs.cloudflare.com/ajax/libs/validate.js/0.13.1/validate.min.js"></script>
+
 </head>
 
 <body>
 
-  <div class="h-screen bg-gray-300">
-    <div class="container flex justify-center py-20">
+  <div id="app" class="h-screen bg-gray-300">
+    <div class=" flex justify-center py-20">
       <div class="p-3 bg-white rounded-xl max-w-lg hover:shadow">
 
-
+        <!-- SHOW INFO  -->
         <div class="flex justify-between w-full">
-          <img src="images/profiles.jpg" width="150" class="rounded-lg">
+          <img v-bind:src="img" width="150" class="rounded-lg">
           <div class="ml-2">
-            <div id="app" class="p-3">
+            <div class="pr-3 pl-3">
               <h3 class="text-2xl">{{ firstname }} {{ lastname }}</h3>
-              <span>{{ role }}</span>
             </div>
+
+            <div class="grid grid-cols-2  gap-4">
+              <div class="pr-3 pl-3">
+                <label>Nick:{{ nickname }} </label>
+              </div>
+
+              <div class="pr-3 pl-3">
+                <label>Age: {{ age }}</label>
+              </div>
+
+              <div class="pr-3 pl-3">
+                <label>Tel: {{ phone }}</label>
+              </div>
+
+              <div class="pr-3 pl-3">
+                <label>Gender:{{ gender }} </label>
+              </div>
+
+              <div class="pr-3 pl-3 pb-3">
+                <label>Email:{{ email }}</label>
+              </div>
+
+            </div>
+
             <div class="flex justify-between items-center p-3 bg-gray-200 rounded-lg">
               <div class="mr-3"> <span class="text-gray-400 block">Article</span> <span
                   class="font-bold text-black text-xl">34</span> </div>
@@ -42,20 +66,101 @@
               <div> <span class="text-gray-400 block">Ratings</span> <span
                   class="font-bold text-black text-xl">8.9</span> </div>
             </div>
+
           </div>
         </div>
-        <div class="flex justify-between items-center mt-2 gap-2"> <button
-            class="w-full h-12 rounded-md border-2 text-md hover:shadow hover:bg-red-700 hover:border-red-700 hover:text-white ">Chat</button>
-          <button
-            class="w-full h-12 rounded-md bg-blue-700 text-white text-md hover:shadow hover:bg-blue-800">Chat</button>
-        </div>
-        <input v-model="input"
-        placeholder="Please enter a search" class="p-2 mt-2 bg-white rounded border-2 border-blue-300">
-                    
-        
+
+        <!-- Edit Form -->
+        <form @submit.prevent="checkForm">
+
+          <button v-show='!editpstate' class="text-blue-100" @click="changeeditstate">
+            edit profile
+          </button>
+
+          <div v-show='editpstate'>
+
+            <div class="grid grid-cols-2  gap-4">
+
+              <div class="flex flex-col">
+                <label for="firstname" class="text-sm leading-7 text-gray-600">First Name</label>
+                <input type="text" id="firstname" v-model.lazy="firstname" name="firstname"
+                  class="bg-gray-100 rounded px-4 py-2 mb-4">
+              </div>
+
+              <div class="flex flex-col">
+                <label for="lastname" class="text-sm leading-7 text-gray-600">Last Name</label>
+                <input type="text" id="lastname" v-model.lazy="lastname" name="lastname"
+                  class="bg-gray-100 rounded px-4 py-2 mb-4">
+              </div>
+
+              <div class="flex flex-col">
+                <label for="nickname" class="text-sm leading-7 text-gray-600">Nick Name</label>
+                <input type="text" id="nickname" v-model.lazy="nickname" name="nickname"
+                  class="bg-gray-100 rounded px-4 py-2 mb-4">
+              </div>
+
+              <div class="flex flex-col">
+                <label for="age" class="text-sm leading-7 text-gray-600">Age</label>
+                <input type="text" id="age" v-model.lazy="age" name="age" class="bg-gray-100 rounded px-4 py-2 mb-4">
+              </div>
+
+              <div class="flex flex-col">
+                <label class="text-sm leading-7 text-gray-600">Gender</label>
+                <div class="flex flex-row pt-2 space-x-2">
+                  <input type="radio" id="Male" v-model.lazy="gender" name="gender" value="M"
+                    class="bg-gray-100 rounded px-4 py-2 mb-4">
+                  <label for="Male">Male</label>
+                  <input type="radio" id="Female" v-model.lazy="gender" name="gender" value="F"
+                    class="bg-gray-100 rounded px-4 py-2 mb-4">
+                  <label for="Female">Female</label>
+                </div>
+              </div>
+
+              <div class="flex flex-col">
+                <label for="email" class="text-sm leading-7 text-gray-600">Email</label>
+                <input type="text" id="email" v-model.lazy="email" name="email"
+                  class="bg-gray-100 rounded px-4 py-2 mb-4">
+              </div>
+
+              <div class="flex flex-col">
+                <label for="phone" class="text-sm leading-7 text-gray-600">Phone Number</label>
+                <input type="text" id="phone" v-model="phone" name="phone" class="bg-gray-100 rounded px-4 py-2 mb-4">
+              </div>
+              <div class="flex flex-col"></div>
+
+
+              <!-- SUBMIT -->
+              <div class="flex flex-col">
+                <div @click="submit" >
+                  <input type="submit" value="Submit"
+                    class="px-8 py-2 text-white bg-green-500 rounded-lg hover:bg-green-600 focus:shadow-outline focus:outline-none focus:ring-2 ring-offset-current ring-offset-2">
+                </div>
+                <!-- CANCEL -->
+                <div>
+                  <button @click="changeeditstate"
+                    class="px-8 py-2 text-white bg-green-500 rounded-lg hover:bg-green-600 ">
+                    Cancel
+                  </button>
+                </div>
+              </div>
+
+            </div>
+
+            <!-- ERROR -->
+            <p v-if="errors" class="text-red-500">
+              <b>Please correct the following error(s):</b>
+              <ul>
+                <li v-for="error in errors" class="text-red-500">{{ error }}</li>
+              </ul>
+            </p>
+
+          </div>
+        </form>
       </div>
     </div>
+
   </div>
+
 
 
   <!-- my main.js -->
